@@ -1,0 +1,28 @@
+{
+  "name": "prompt-template",
+  "version": "0.1.0-alpha",
+  "description": "Prompt 模板填入工具 - 一個用於建立和填入 AI prompt 模板的工具",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "serve": "npx serve ."
+  },
+  "keywords": [
+    "prompt",
+    "template",
+    "ai",
+    "tool",
+    "chinese",
+    "填入工具"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "homepage": "https://fill.prompt.owo.is",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/prompt-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/prompt-template/issues"
+  }
+}

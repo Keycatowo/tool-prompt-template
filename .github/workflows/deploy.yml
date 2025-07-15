@@ -1,0 +1,68 @@
+name: 部署到 GitHub Pages
+
+on:
+  push:
+    branches: [ main ]  # 當 main 分支有更新時觸發
+  workflow_run:
+    workflows: ["自動發佈版本"]
+    types:
+      - completed  # 當發佈工作流完成時觸發
+
+# 設定 GITHUB_TOKEN 的權限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 只允許一個並發部署
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # 建構和部署到 GitHub Pages
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: 檢出代碼
+        uses: actions/checkout@v4
+        with:
+          ref: main  # 確保使用 main 分支
+
+      - name: 設定 GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: 準備部署文件
+        run: |
+          echo "📦 準備部署文件..."
+          
+          # 確保所有必要文件都存在
+          if [ ! -f "index.html" ]; then
+            echo "❌ 缺少 index.html"
+            exit 1
+          fi
+          
+          echo "✅ 所有必要文件都存在"
+          
+          # 列出將要部署的文件
+          echo "📋 部署文件清單："
+          find . -type f -name "*.html" -o -name "*.js" -o -name "*.json" -o -name "*.md" | grep -v ".git" | sort
+
+      - name: 上傳到 GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'  # 上傳整個專案目錄
+
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: 部署完成通知
+        run: |
+          echo "🚀 部署完成！"
+          echo "🔗 網站連結: ${{ steps.deployment.outputs.page_url }}"
+          echo "📝 Prompt 模板工具已可使用"

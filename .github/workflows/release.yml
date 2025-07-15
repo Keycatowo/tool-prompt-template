@@ -1,0 +1,131 @@
+name: 自動發佈版本
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # 觸發條件：推送 vX.X.X 格式的標籤到 dev 分支
+
+jobs:
+  # 檢查標籤是否在 dev 分支上
+  check-branch:
+    runs-on: ubuntu-latest
+    outputs:
+      is-dev-branch: ${{ steps.check.outputs.is-dev-branch }}
+    steps:
+      - name: 檢出代碼
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 獲取完整歷史記錄
+
+      - name: 檢查標籤是否在 dev 分支
+        id: check
+        run: |
+          TAG_COMMIT=$(git rev-list -n 1 ${{ github.ref }})
+          DEV_COMMIT=$(git rev-parse origin/dev)
+          
+          if git merge-base --is-ancestor $TAG_COMMIT origin/dev; then
+            echo "is-dev-branch=true" >> $GITHUB_OUTPUT
+            echo "✅ 標籤在 dev 分支上"
+          else
+            echo "is-dev-branch=false" >> $GITHUB_OUTPUT
+            echo "❌ 標籤不在 dev 分支上"
+          fi
+
+  # 合併到 main 分支並發佈 release
+  release:
+    needs: check-branch
+    if: needs.check-branch.outputs.is-dev-branch == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: 檢出代碼
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 設定 Git 配置
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: 獲取版本號
+        id: get-version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version-file=changelogs/${VERSION}.md" >> $GITHUB_OUTPUT
+
+      - name: 檢查 changelog 文件是否存在
+        id: check-changelog
+        run: |
+          if [ -f "changelogs/${{ steps.get-version.outputs.version }}.md" ]; then
+            echo "changelog-exists=true" >> $GITHUB_OUTPUT
+            echo "✅ 找到 changelog 文件: changelogs/${{ steps.get-version.outputs.version }}.md"
+          else
+            echo "changelog-exists=false" >> $GITHUB_OUTPUT
+            echo "❌ 未找到 changelog 文件: changelogs/${{ steps.get-version.outputs.version }}.md"
+            exit 1
+          fi
+
+      - name: 合併到 main 分支
+        run: |
+          # 切換到 main 分支
+          git fetch origin main
+          git checkout main
+          git pull origin main
+          
+          # 合併標籤對應的 commit
+          TAG_COMMIT=$(git rev-list -n 1 ${{ github.ref }})
+          git merge $TAG_COMMIT --no-ff -m "chore: release ${{ steps.get-version.outputs.version }}"
+          
+          # 推送到 main 分支
+          git push origin main
+
+      - name: 讀取 changelog 內容
+        id: changelog
+        run: |
+          # 讀取 changelog 文件內容
+          CHANGELOG_CONTENT=$(cat "${{ steps.get-version.outputs.version-file }}")
+          
+          # 將內容保存到環境變數（處理多行內容）
+          echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG_CONTENT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: 創建 GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get-version.outputs.version }}
+          release_name: ${{ steps.get-version.outputs.version }}
+          body: ${{ env.CHANGELOG_CONTENT }}
+          draft: false
+          prerelease: false
+          commitish: main  # 指向 main 分支
+
+      - name: 通知發佈成功
+        run: |
+          echo "🎉 版本 ${{ steps.get-version.outputs.version }} 發佈成功！"
+          echo "📋 Changelog: changelogs/${{ steps.get-version.outputs.version }}.md"
+          echo "🔗 Release: https://github.com/${{ github.repository }}/releases/tag/${{ steps.get-version.outputs.version }}"
+
+  # 如果標籤不在 dev 分支，顯示錯誤訊息
+  invalid-branch:
+    needs: check-branch
+    if: needs.check-branch.outputs.is-dev-branch == 'false'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 顯示錯誤訊息
+        run: |
+          echo "❌ 錯誤：版本標籤必須在 dev 分支上才能觸發自動發佈"
+          echo "請確保："
+          echo "1. 在 dev 分支上創建標籤"
+          echo "2. 標籤格式為 vX.X.X"
+          echo "3. 對應的 changelog 文件存在於 changelogs/ 資料夾中"
+          exit 1
