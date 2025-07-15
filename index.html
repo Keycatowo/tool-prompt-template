@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prompt 模板填入工具</title>
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23667eea'%3e%3cpath d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/%3e%3c/svg%3e" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23667eea'%3e%3cpath d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/%3e%3c/svg%3e">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -364,7 +366,7 @@
             border-radius: 15px;
             width: 90%;
             max-width: 600px;
-            max-height: 80vh;
+            max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             animation: modalAppear 0.3s ease;
@@ -395,7 +397,9 @@
 
         .modal textarea {
             min-height: 120px;
+            max-height: none;
             resize: vertical;
+            overflow-y: hidden;
         }
 
         .modal input:focus, .modal textarea:focus {
@@ -519,6 +523,41 @@
             font-style: italic;
             padding: 40px;
         }
+
+        .example-selector {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-selector h4 {
+            margin: 0 0 10px 0;
+            color: #0c4a6e;
+            font-size: 1rem;
+        }
+
+        .example-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e7ff;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .example-selector select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .example-selector select:hover {
+            border-color: #c7d2fe;
+        }
     </style>
 </head>
 <body>
@@ -609,21 +648,47 @@
     <div id="templateModal" class="modal">
         <div class="modal-content">
             <h3>✏️ 編輯 Prompt 模板</h3>
+            
+            <div class="example-selector">
+                <h4>📚 快速選取範例：</h4>
+                <select id="exampleSelector" onchange="loadExample()">
+                    <option value="">── 選擇範例模板 ──</option>
+                    <option value="商務場景.txt">💼 商務場景</option>
+                    <option value="教育學習.txt">🎓 教育學習</option>
+                    <option value="健康生活.txt">🏅 健康生活</option>
+                    <option value="理財投資.txt">💰 理財投資</option>
+                    <option value="料理烹飪.txt">🍳 料理烹飪</option>
+                    <option value="旅遊規劃.txt">🌍 旅遊規劃</option>
+                    <option value="創作設計.txt">🎨 創作設計</option>
+                    <option value="技術支援.txt">🔧 技術支援</option>
+                    <option value="談判溝通.txt">💬 談判溝通</option>
+                </select>
+            </div>
+            <textarea id="templateInput" placeholder="請輸入你的 prompt 模板，用 [xxx] 標記需要填入的地方。
+
+你可以：
+• 直接輸入你的模板
+• 使用上方下拉選單選擇範例模板
+• 支持選項格式：[標籤，例如：選項A／選項B]
+
+範例：
+請幫我找出 [產品類型，例如：3C產品／服飾／食品] 在 [市場區域] 的使用行為與購買趨勢。"></textarea>
+            
             <div class="example">
                 <h4>使用說明：</h4>
                 <p>在模板中用方括號 <code>[xxx]</code> 標記需要填入的部分，例如：</p>
                 <code>請幫我找出 [產品類型] 在 [市場區域] 的使用行為與購買趨勢</code>
+                <br><br>
+                <p>支持選項格式： <code>[標籤，例如：選項A／選項B／選項C]</code></p>
+                <p>當你使用選項格式時，點擊占位符會顯示快速選擇按鈕，讓填入更方便！</p>
             </div>
-            <textarea id="templateInput" placeholder="請輸入你的 prompt 模板，用 [xxx] 標記需要填入的地方...
-
-範例：
-請幫我找出 [產品類型/族群] 在 [市場區域] 的使用行為與購買趨勢，並說明主要的消費動機與痛點。
-
-分析 [品牌名稱] 在 [競爭對手] 面前的優勢和劣勢，並提出 [改善建議類型] 的策略建議。"></textarea>
             
             <div class="url-share-section">
                 <h4>🔗 分享模板</h4>
-                <p style="color: #718096; font-size: 14px; margin-bottom: 10px;">複製連結來分享你的模板給其他人</p>
+                <p style="color: #718096; font-size: 14px; margin-bottom: 10px;">
+                    將你的模板打包成一個連結，分享給同事、朋友或團隊使用。<br>
+                    他們點擊連結就能直接載入你的模板，無需重新輸入！
+                </p>
                 <button class="btn btn-share" onclick="copyTemplateUrl()">📋 複製分享連結</button>
             </div>
             
@@ -698,8 +763,23 @@
         const modalTitle = document.getElementById('modalTitle');
         const modalHint = document.getElementById('modalHint');
 
+        // 自動調整 textarea 高度
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
         // 初始化
         loadDefaultTemplate();
+        
+        // 為 templateInput 添加自動調整高度的事件監聽
+        templateInput.addEventListener('input', function() {
+            autoResizeTextarea(this);
+        });
+        
+        templateInput.addEventListener('paste', function() {
+            setTimeout(() => autoResizeTextarea(this), 10);
+        });
 
         function switchTab(tabId) {
             // 移除所有 tab 的 active 狀態
@@ -726,6 +806,7 @@
                     currentTemplate = urlTemplate;
                     templateInput.value = currentTemplate;
                     parseTemplate();
+                    autoResizeTextarea(templateInput);
                     console.log('從 URL 載入模板:', currentTemplate);
                     return;
                 } catch (error) {
@@ -734,15 +815,92 @@
                 }
             }
             
-            // 使用預設模板
-            currentTemplate = '請幫我找出 [產品類型/族群] 在 [市場區域] 的使用行為與購買趨勢，並說明主要的消費動機與痛點。';
+            // 使用空白模板
+            currentTemplate = '';
             templateInput.value = currentTemplate;
             parseTemplate();
+        }
+
+        // 範例模板內容
+        const exampleTemplates = {
+            '商務場景.txt': `請扮演 [角色，例如：資深業務經理 / 市場行銷專家 / 客戶關係經理]，協助我 [任務，例如：分析市場趨勢 / 制定行銷策略 / 提升客戶滿意度]。
+
+請使用 [方法，例如：數據分析 / 競爭對手研究 / 客戶訪談] 來達成目標，並以 [輸出格式，例如：報告 / 簡報 / 行動計畫] 的形式呈現結果。`,
+            
+            '教育學習.txt': `我希望你成為我的 [教學角色，例如：程式設計導師／語言學習教練／數學解題助手]，幫助我學習 [學習主題，例如：Python程式設計／英文會話／微積分]。
+
+請使用 [教學方法，例如：互動式問答／實作練習／案例分析] 來進行教學，並根據我的 [學習程度，例如：初學者／中級程度／進階學習者] 調整教學內容。
+
+在教學過程中，請特別注意 [學習重點，例如：基礎概念理解／實際應用練習／解題技巧掌握]，並提供 [回饋方式，例如：即時糾正／階段性測驗／學習進度追蹤]。`,
+            
+            '健康生活.txt': `請扮演 [健康專家，例如：營養師 / 健身教練 / 心理健康顧問]，針對我的 [健康目標，例如：減重10公斤 / 增加肌肉量 / 改善睡眠品質] 提供建議。
+
+考慮到我的 [個人情況，例如：工作繁忙 / 有運動習慣 / 偏好素食] 和 [時間限制，例如：每天30分鐘 / 週末才有時間 / 彈性安排]，請制定可行的計畫。
+
+請提供 [建議類型，例如：飲食調整建議／運動訓練計畫／生活習慣改善]，並說明 [執行方式，例如：每日執行清單／週程安排／月度檢核]。`,
+            
+            '理財投資.txt': `我需要一位 [理財顧問，例如：投資分析師／財務規劃師／保險專家] 幫助我進行 [理財規劃，例如：退休規劃／子女教育基金／房屋購買計畫]。
+
+我的 [風險承受度，例如：保守型／平衡型／積極型] 投資者，每月可投資金額為 [投資金額，例如：1萬元以下／1-3萬元／3萬元以上]，投資期間為 [投資期間，例如：短期(1-3年)／中期(3-10年)／長期(10年以上)]。
+
+請提供 [投資建議，例如：資產配置建議／具體投資標的／風險控制策略]，並說明 [執行步驟，例如：開戶流程／投資時機／定期檢視]。`,
+            
+            '料理烹飪.txt': `請成為我的 [料理指導，例如：中式料理師傅／西式烹飪專家／烘焙達人]，教我製作 [料理類型，例如：家常菜／節慶料理／健康輕食]。
+
+考慮到我的 [烹飪程度，例如：新手／有基礎／進階] 和 [設備限制，例如：只有電鍋／完整廚房／簡易設備]，請提供 [難度等級，例如：簡單易做／中等難度／挑戰性高] 的食譜。
+
+請包含 [食譜內容，例如：詳細步驟／營養分析／變化建議] 和 [實用提醒，例如：食材挑選要點／保存方法／失敗處理]。`,
+            
+            '旅遊規劃.txt': `請扮演 [旅遊專家，例如：旅遊規劃師／當地導遊／背包客達人]，協助我規劃 [旅遊目的地，例如：日本關西／歐洲多國／東南亞] 的旅程。
+
+我的旅遊類型是 [旅遊風格，例如：文化深度遊／美食探索／自然景觀／購物血拼]，預算範圍為 [預算，例如：經濟型／中等預算／豪華旅遊]，旅遊天數為 [天數，例如：3-5天／一週／10天以上]。
+
+請提供 [旅遊規劃，例如：行程安排／住宿推薦／交通方式] 和 [實用資訊，例如：必買伴手禮／注意事項／緊急聯絡方式]。`,
+            
+            '創作設計.txt': `我希望你成為 [創意導師，例如：平面設計師／文案創作者／影片製作人]，指導我完成 [創作專案，例如：品牌LOGO設計／社群媒體文案／產品介紹影片]。
+
+目標受眾是 [受眾群體，例如：年輕族群／專業人士／家庭用戶]，風格偏好為 [設計風格，例如：簡約現代／活潑有趣／專業穩重]，需要在 [時間限制，例如：本週內／一個月內／沒有急迫性] 完成。
+
+請提供 [創作指導，例如：設計概念／創意發想／技術建議] 和 [執行細節，例如：工具推薦／流程安排／品質檢核]。`,
+            
+            '技術支援.txt': `請擔任 [技術專家，例如：程式開發者／系統管理員／資料分析師]，協助我解決 [技術問題，例如：程式除錯／系統優化／資料處理]。
+
+我的技術背景是 [技術水平，例如：初學者／有基礎／資深工程師]，使用的技術環境為 [技術環境，例如：Windows／Mac／Linux]，期望的解決方案格式為 [解決方案，例如：step-by-step教學／程式碼範例／架構建議]。
+
+請提供 [技術指導，例如：問題分析／解決步驟／最佳實踐] 和 [學習資源，例如：相關文件／進階教材／社群推薦]。`,
+            
+            '談判溝通.txt': `我希望你成為我的 [角色，例如：資深談判教練／商務策略顧問／跨文化談判專家]，你的目標是協助我 [主要任務，例如：模擬即將進行的談判／制定談判策略／評估談判風險]，透過 [方法，例如：提問與討論／案例分析／角色扮演] 幫助我 [目的，例如：設計策略與掌握要點／預測對方立場／強化談判技巧]，並提醒我 [提醒事項，例如：檢視目標與可能的影響／關注談判時機／評估替代方案]。
+
+你將按照以下方式進行對話：
+1. 確認 [步驟一名稱，例如：談判主題確認／背景收集]：首先詢問並確認我希望模擬的 [主題，例如：薪資協商／合同談判／採購議價] 與 [背景情境，例如：初次面談／年度合約續簽／跨國交易]。
+2. [步驟二名稱，例如：提問導向／深度探索]：根據設定的主題，透過提問幫助我深入思考 [策略要點，例如：底線設定／價值交換方案]、[對方立場，例如：利益關切／潛在顧慮]，必要時直接告訴我可能的 [解決方案，例如：讓步策略／替代提案]。
+3. [步驟三名稱，例如：摘要與總結／關鍵回顧]：在適當時機進行簡短的摘要或總結，讓我清楚了解 [關鍵點，例如：核心利益／風險因素] 與 [可行策略，例如：進攻方案／防守選項]。`
+        };
+
+        function loadExample() {
+            const selector = document.getElementById('exampleSelector');
+            const selectedFile = selector.value;
+            
+            if (!selectedFile) {
+                return;
+            }
+            
+            const templateContent = exampleTemplates[selectedFile];
+            if (templateContent) {
+                currentTemplate = templateContent.trim();
+                templateInput.value = currentTemplate;
+                parseTemplate();
+                autoResizeTextarea(templateInput);
+                showNotification(`✅ 已載入「${selector.options[selector.selectedIndex].text.replace(/^\S+\s/, '')}」範例`);
+            } else {
+                showNotification('❌ 找不到範例模板', '#f56565');
+            }
         }
 
         function openTemplateEditor() {
             templateModal.style.display = 'block';
             templateInput.focus();
+            autoResizeTextarea(templateInput);
         }
 
         function closeTemplateEditor() {
@@ -759,7 +917,7 @@
 
         function parseTemplate() {
             if (!currentTemplate) {
-                templateDisplay.innerHTML = '<div class="empty-template">請點擊「編輯模板」開始設定你的 prompt 模板...</div>';
+                templateDisplay.innerHTML = '<div class="empty-template">請點擊「編輯模板」開始設定你的 prompt 模板，或使用編輯器中的範例選擇器...</div>';
                 return;
             }
 
@@ -772,11 +930,34 @@
             let match;
             
             while ((match = placeholderRegex.exec(currentTemplate)) !== null) {
-                placeholders.push({
+                const content = match[1];
+                const placeholder = {
                     full: match[0],
-                    content: match[1],
+                    content: content,
                     index: placeholders.length
-                });
+                };
+                
+                // 檢查是否包含選項（以 ／ 或 / 分隔）
+                if (content.includes('／') || content.includes('/')) {
+                    const parts = content.split('，');
+                    if (parts.length >= 2) {
+                        placeholder.label = parts[0];
+                        const optionPart = parts.slice(1).join('，');
+                        if (optionPart.includes('例如：')) {
+                            const examplePart = optionPart.split('例如：')[1];
+                            if (examplePart) {
+                                // 同時支援全形和半形斜線分隔
+                                const options = examplePart.includes('／') ? 
+                                    examplePart.split('／') : 
+                                    examplePart.split('/');
+                                placeholder.options = options.map(opt => opt.trim().replace(/[\[\]]/g, ''));
+                                placeholder.hasOptions = true;
+                            }
+                        }
+                    }
+                }
+                
+                placeholders.push(placeholder);
             }
 
             renderTemplate();
@@ -787,12 +968,24 @@
             
             placeholders.forEach((placeholder, index) => {
                 const value = filledValues[index];
-                const displayText = value || placeholder.content;
-                const isFilledClass = value ? 'filled' : '';
+                let displayText;
+                let titleText;
                 
-                const span = `<span class="placeholder ${isFilledClass}" onclick="openFillModal(${index})" title="點擊填入: ${placeholder.content}">${displayText}</span>`;
+                if (placeholder.hasOptions && placeholder.label) {
+                    displayText = value || placeholder.label;
+                    titleText = `點擊填入: ${placeholder.label}`;
+                } else {
+                    displayText = value || placeholder.content;
+                    titleText = `點擊填入: ${placeholder.content}`;
+                }
+                
+                const isFilledClass = value ? 'filled' : '';
+                const span = `<span class="placeholder ${isFilledClass}" onclick="openFillModal(${index})" title="${titleText}">${displayText}</span>`;
                 template = template.replace(placeholder.full, span);
             });
+
+            // 將換行符轉換為 HTML 換行標籤
+            template = template.replace(/\n/g, '<br>');
 
             // 添加格式要求
             if (addedFormats.length > 0) {
@@ -810,11 +1003,118 @@
             currentPlaceholderIndex = index;
             const placeholder = placeholders[index];
             
-            modalTitle.textContent = `填入：${placeholder.content}`;
-            modalHint.textContent = `請為「${placeholder.content}」輸入具體內容`;
-            modalInput.value = filledValues[index] || '';
-            fillModal.style.display = 'block';
+            // 清空之前的內容
+            const modalContent = fillModal.querySelector('.modal-content');
+            const existingOptions = modalContent.querySelector('.option-buttons');
+            if (existingOptions) {
+                existingOptions.remove();
+            }
             
+            const displayText = placeholder.label || placeholder.content;
+            modalTitle.textContent = `填入：${displayText}`;
+            modalHint.textContent = `請為「${displayText}」輸入具體內容`;
+            modalInput.value = filledValues[index] || '';
+            
+            // 如果有選項，添加選項按鈕
+            if (placeholder.hasOptions && placeholder.options) {
+                const optionContainer = document.createElement('div');
+                optionContainer.className = 'option-buttons';
+                optionContainer.style.cssText = `
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                    gap: 8px;
+                    margin: 15px 0;
+                    padding: 15px;
+                    background: #f8fafc;
+                    border-radius: 8px;
+                    border: 1px solid #e2e8f0;
+                `;
+                
+                const optionTitle = document.createElement('div');
+                optionTitle.textContent = '快速選擇：';
+                optionTitle.style.cssText = `
+                    grid-column: 1 / -1;
+                    font-size: 14px;
+                    font-weight: 500;
+                    color: #4a5568;
+                    margin-bottom: 8px;
+                `;
+                optionContainer.appendChild(optionTitle);
+                
+                placeholder.options.forEach(option => {
+                    const optionBtn = document.createElement('button');
+                    optionBtn.textContent = option;
+                    optionBtn.className = 'option-btn';
+                    optionBtn.style.cssText = `
+                        padding: 8px 12px;
+                        border: 2px solid #e2e8f0;
+                        background: white;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 13px;
+                        font-weight: 500;
+                        color: #4a5568;
+                        transition: all 0.2s ease;
+                    `;
+                    
+                    optionBtn.addEventListener('mouseenter', () => {
+                        optionBtn.style.borderColor = '#667eea';
+                        optionBtn.style.background = '#f7fafc';
+                        optionBtn.style.color = '#667eea';
+                    });
+                    
+                    optionBtn.addEventListener('mouseleave', () => {
+                        optionBtn.style.borderColor = '#e2e8f0';
+                        optionBtn.style.background = 'white';
+                        optionBtn.style.color = '#4a5568';
+                    });
+                    
+                    optionBtn.addEventListener('click', () => {
+                        modalInput.value = option;
+                        modalInput.focus();
+                    });
+                    
+                    optionContainer.appendChild(optionBtn);
+                });
+                
+                // 添加「其他」選項
+                const otherBtn = document.createElement('button');
+                otherBtn.textContent = '其他...';
+                otherBtn.className = 'option-btn';
+                otherBtn.style.cssText = `
+                    padding: 8px 12px;
+                    border: 2px solid #fbbf24;
+                    background: #fef3c7;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: #92400e;
+                    transition: all 0.2s ease;
+                `;
+                
+                otherBtn.addEventListener('mouseenter', () => {
+                    otherBtn.style.borderColor = '#f59e0b';
+                    otherBtn.style.background = '#fde68a';
+                });
+                
+                otherBtn.addEventListener('mouseleave', () => {
+                    otherBtn.style.borderColor = '#fbbf24';
+                    otherBtn.style.background = '#fef3c7';
+                });
+                
+                otherBtn.addEventListener('click', () => {
+                    modalInput.value = '';
+                    modalInput.focus();
+                });
+                
+                optionContainer.appendChild(otherBtn);
+                
+                const inputElement = modalContent.querySelector('#modalInput');
+                inputElement.parentNode.insertBefore(optionContainer, inputElement);
+            }
+            
+            fillModal.style.display = 'block';
             setTimeout(() => modalInput.focus(), 100);
         }
 

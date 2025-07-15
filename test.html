@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選項功能測試</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-case {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-case h3 {
+            color: #495057;
+            margin-top: 0;
+        }
+        .template-text {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 選項功能測試檔案</h1>
+    <p>以下是各種選項格式的測試案例，您可以複製這些模板到主應用程式中測試：</p>
+
+    <div class="test-case">
+        <h3>📋 測試案例 1：商務場景</h3>
+        <div class="template-text">請扮演 [角色，例如：資深業務經理 / 市場行銷專家 / 客戶關係經理]，協助我 [任務，例如：分析市場趨勢 / 制定行銷策略 / 提升客戶滿意度]。
+
+請使用 [方法，例如：數據分析 / 競爭對手研究 / 客戶訪談] 來達成目標，並以 [輸出格式，例如：報告 / 簡報 / 行動計畫] 的形式呈現結果。</div>
+        <button class="button" onclick="copyToClipboard(this.previousElementSibling.textContent)">複製模板</button>
+    </div>
+
+    <div class="test-case">
+        <h3>🎓 測試案例 2：教育場景</h3>
+        <div class="template-text">我希望你成為我的 [教學角色，例如：程式設計導師／語言學習教練／數學解題助手]，幫助我學習 [學習主題，例如：Python程式設計／英文會話／微積分]。
+
+請使用 [教學方法，例如：互動式問答／實作練習／案例分析] 來進行教學，並根據我的 [學習程度，例如：初學者／中級程度／進階學習者] 調整教學內容。</div>
+        <button class="button" onclick="copyToClipboard(this.previousElementSibling.textContent)">複製模板</button>
+    </div>
+
+    <div class="test-case">
+        <h3>🏥 測試案例 3：健康生活</h3>
+        <div class="template-text">請扮演 [健康專家，例如：營養師 / 健身教練 / 心理健康顧問]，針對我的 [健康目標，例如：減重10公斤 / 增加肌肉量 / 改善睡眠品質] 提供建議。
+
+考慮到我的 [個人情況，例如：工作繁忙 / 有運動習慣 / 偏好素食] 和 [時間限制，例如：每天30分鐘 / 週末才有時間 / 彈性安排]，請制定可行的計畫。</div>
+        <button class="button" onclick="copyToClipboard(this.previousElementSibling.textContent)">複製模板</button>
+    </div>
+
+    <div class="test-case">
+        <h3>💰 測試案例 4：理財投資</h3>
+        <div class="template-text">我需要一位 [理財顧問，例如：投資分析師／財務規劃師／保險專家] 幫助我進行 [理財規劃，例如：退休規劃／子女教育基金／房屋購買計畫]。
+
+我的 [風險承受度，例如：保守型／平衡型／積極型] 投資者，每月可投資金額為 [投資金額，例如：1萬元以下／1-3萬元／3萬元以上]，投資期間為 [投資期間，例如：短期(1-3年)／中期(3-10年)／長期(10年以上)]。</div>
+        <button class="button" onclick="copyToClipboard(this.previousElementSibling.textContent)">複製模板</button>
+    </div>
+
+    <div class="test-case">
+        <h3>🍳 測試案例 5：料理烹飪</h3>
+        <div class="template-text">請成為我的 [料理指導，例如：中式料理師傅／西式烹飪專家／烘焙達人]，教我製作 [料理類型，例如：家常菜／節慶料理／健康輕食]。
+
+考慮到我的 [烹飪程度，例如：新手／有基礎／進階] 和 [設備限制，例如：只有電鍋／完整廚房／簡易設備]，請提供 [難度等級，例如：簡單易做／中等難度／挑戰性高] 的食譜。</div>
+        <button class="button" onclick="copyToClipboard(this.previousElementSibling.textContent)">複製模板</button>
+    </div>
+
+    <div class="test-case">
+        <h3>🌍 測試案例 6：旅遊規劃</h3>
+        <div class="template-text">請扮演 [旅遊專家，例如：旅遊規劃師／當地導遊／背包客達人]，協助我規劃 [旅遊目的地，例如：日本關西／歐洲多國／東南亞] 的旅程。
+
+我的旅遊類型是 [旅遊風格，例如：文化深度遊／美食探索／自然景觀／購物血拼]，預算範圍為 [預算，例如：經濟型／中等預算／豪華旅遊]，旅遊天數為 [天數，例如：3-5天／一週／10天以上]。</div>
+        <button class="button" onclick="copyToClipboard(this.previousElementSibling.textContent)">複製模板</button>
+    </div>
+
+    <div class="test-case">
+        <h3>🎨 測試案例 7：創作與設計</h3>
+        <div class="template-text">我希望你成為 [創意導師，例如：平面設計師／文案創作者／影片製作人]，指導我完成 [創作專案，例如：品牌LOGO設計／社群媒體文案／產品介紹影片]。
+
+目標受眾是 [受眾群體，例如：年輕族群／專業人士／家庭用戶]，風格偏好為 [設計風格，例如：簡約現代／活潑有趣／專業穩重]，需要在 [時間限制，例如：本週內／一個月內／沒有急迫性] 完成。</div>
+        <button class="button" onclick="copyToClipboard(this.previousElementSibling.textContent)">複製模板</button>
+    </div>
+
+    <div class="test-case">
+        <h3>🔧 測試案例 8：技術支援</h3>
+        <div class="template-text">請擔任 [技術專家，例如：程式開發者／系統管理員／資料分析師]，協助我解決 [技術問題，例如：程式除錯／系統優化／資料處理]。
+
+我的技術背景是 [技術水平，例如：初學者／有基礎／資深工程師]，使用的技術環境為 [技術環境，例如：Windows／Mac／Linux]，期望的解決方案格式為 [解決方案，例如：step-by-step教學／程式碼範例／架構建議]。</div>
+        <button class="button" onclick="copyToClipboard(this.previousElementSibling.textContent)">複製模板</button>
+    </div>
+
+    <div class="test-case">
+        <h3>🎯 測試案例 9：混合格式測試</h3>
+        <div class="template-text">這是一個混合格式的測試模板，包含：
+- 全形斜線選項：[角色，例如：顧問／專家／教練]
+- 半形斜線選項：[方法，例如：分析 / 建議 / 實作]
+- 純文字占位符：[您的具體需求]
+- 長選項：[複雜選項，例如：詳細的第一個選項說明／包含多個詞語的第二個選項／簡短的第三選項]</div>
+        <button class="button" onclick="copyToClipboard(this.previousElementSibling.textContent)">複製模板</button>
+    </div>
+
+    <script>
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('模板已複製到剪貼簿！');
+                }).catch(() => {
+                    fallbackCopyToClipboard(text);
+                });
+            } else {
+                fallbackCopyToClipboard(text);
+            }
+        }
+
+        function fallbackCopyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                if (successful) {
+                    showNotification('模板已複製到剪貼簿！');
+                } else {
+                    showNotification('複製失敗，請手動複製');
+                }
+            } catch (err) {
+                document.body.removeChild(textArea);
+                showNotification('複製失敗，請手動複製');
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 4px;
+                z-index: 1000;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
