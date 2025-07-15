@@ -1,0 +1,127 @@
+name: 持續整合檢查
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  # 檢查文件完整性
+  check-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 檢出代碼
+        uses: actions/checkout@v4
+
+      - name: 檢查必要檔案
+        run: |
+          echo "🔍 檢查必要檔案..."
+          
+          # 檢查主要檔案
+          if [ ! -f "index.html" ]; then
+            echo "❌ 缺少 index.html"
+            exit 1
+          fi
+          
+          if [ ! -f "package.json" ]; then
+            echo "❌ 缺少 package.json"
+            exit 1
+          fi
+          
+          if [ ! -f "README.md" ]; then
+            echo "❌ 缺少 README.md"
+            exit 1
+          fi
+          
+          if [ ! -f "CHANGELOG.md" ]; then
+            echo "❌ 缺少 CHANGELOG.md"
+            exit 1
+          fi
+          
+          if [ ! -d "changelogs" ]; then
+            echo "❌ 缺少 changelogs 資料夾"
+            exit 1
+          fi
+          
+          echo "✅ 所有必要檔案都存在"
+
+      - name: 檢查 package.json 格式
+        run: |
+          echo "📋 檢查 package.json 格式..."
+          if ! python -m json.tool package.json > /dev/null 2>&1; then
+            echo "❌ package.json 格式錯誤"
+            exit 1
+          fi
+          echo "✅ package.json 格式正確"
+
+      - name: 檢查 HTML 語法
+        run: |
+          echo "🔍 檢查 HTML 語法..."
+          # 檢查 index.html 是否包含必要的標籤
+          if ! grep -q "<!DOCTYPE html>" index.html; then
+            echo "❌ 缺少 DOCTYPE 聲明"
+            exit 1
+          fi
+          
+          if ! grep -q "<title>" index.html; then
+            echo "❌ 缺少 title 標籤"
+            exit 1
+          fi
+          
+          if ! grep -q "viewport" index.html; then
+            echo "❌ 缺少 viewport meta 標籤"
+            exit 1
+          fi
+          
+          echo "✅ HTML 語法檢查通過"
+
+      - name: 檢查版本一致性
+        run: |
+          echo "🔍 檢查版本一致性..."
+          
+          # 從 package.json 讀取版本
+          PACKAGE_VERSION=$(python -c "import json; print(json.load(open('package.json'))['version'])")
+          echo "📋 package.json 版本: $PACKAGE_VERSION"
+          
+          # 檢查對應的 changelog 是否存在
+          if [ ! -f "changelogs/v${PACKAGE_VERSION}.md" ]; then
+            echo "⚠️ 警告：找不到對應的 changelog 文件 changelogs/v${PACKAGE_VERSION}.md"
+            echo "這在開發過程中是正常的，但發佈前請確保創建"
+          else
+            echo "✅ 找到對應的 changelog 文件"
+          fi
+
+  # 測試本地服務器
+  test-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 檢出代碼
+        uses: actions/checkout@v4
+
+      - name: 設定 Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: 測試本地服務器
+        run: |
+          echo "🚀 測試本地服務器..."
+          
+          # 啟動本地服務器
+          python -m http.server 8000 &
+          SERVER_PID=$!
+          
+          # 等待服務器啟動
+          sleep 3
+          
+          # 測試服務器是否回應
+          if curl -f http://localhost:8000/ > /dev/null 2>&1; then
+            echo "✅ 本地服務器測試通過"
+          else
+            echo "❌ 本地服務器測試失敗"
+            exit 1
+          fi
+          
+          # 停止服務器
+          kill $SERVER_PID

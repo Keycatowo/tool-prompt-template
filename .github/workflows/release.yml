@@ -3,7 +3,10 @@ name: 自動發佈版本
 on:
   push:
     tags:
-      - 'v*.*.*'  # 觸發條件：推送 vX.X.X 格式的標籤到 dev 分支
+      - 'v*.*.*'        # 觸發條件：推送 vX.X.X 格式的標籤到 dev 分支
+      - 'v*.*.*-alpha'  # 支援 alpha 版本
+      - 'v*.*.*-beta'   # 支援 beta 版本
+      - 'v*.*.*-rc'     # 支援 rc 版本
 
 jobs:
   # 檢查標籤是否在 dev 分支上
@@ -58,6 +61,15 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "version-file=changelogs/${VERSION}.md" >> $GITHUB_OUTPUT
+          
+          # 判斷是否為預發布版本
+          if [[ "$VERSION" =~ -alpha|-beta|-rc ]]; then
+            echo "is-prerelease=true" >> $GITHUB_OUTPUT
+            echo "📦 檢測到預發布版本: $VERSION"
+          else
+            echo "is-prerelease=false" >> $GITHUB_OUTPUT
+            echo "📦 檢測到正式版本: $VERSION"
+          fi
 
       - name: 檢查 changelog 文件是否存在
         id: check-changelog
@@ -105,7 +117,7 @@ jobs:
           release_name: ${{ steps.get-version.outputs.version }}
           body: ${{ env.CHANGELOG_CONTENT }}
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.get-version.outputs.is-prerelease }}
           commitish: main  # 指向 main 分支
 
       - name: 通知發佈成功
@@ -126,6 +138,6 @@ jobs:
           echo "❌ 錯誤：版本標籤必須在 dev 分支上才能觸發自動發佈"
           echo "請確保："
           echo "1. 在 dev 分支上創建標籤"
-          echo "2. 標籤格式為 vX.X.X"
+          echo "2. 標籤格式為 vX.X.X 或 vX.X.X-alpha/beta/rc"
           echo "3. 對應的 changelog 文件存在於 changelogs/ 資料夾中"
           exit 1
