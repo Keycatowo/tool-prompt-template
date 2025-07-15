@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt 模板填入工具</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .template-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .template-title {
+            color: #2d3748;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .edit-template-btn {
+            background: linear-gradient(45deg, #ed8936, #dd6b20);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .edit-template-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(237, 137, 54, 0.4);
+        }
+
+        .template-display {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            min-height: 100px;
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .placeholder {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 0 3px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .placeholder:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .filled {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            animation: fillAnimation 0.3s ease;
+        }
+
+        @keyframes fillAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h2 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .format-note {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #9a3412;
+        }
+
+        .format-tabs {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: #f8fafc;
+            padding: 6px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            padding: 25px;
+            min-height: 100px;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .format-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .format-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            color: #4a5568;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .format-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .format-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            color: #667eea;
+        }
+
+        .format-btn:hover::before {
+            left: 100%;
+        }
+
+        .format-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .format-btn.active:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .tab-buttons {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            
+            .tab-btn {
+                font-size: 12px;
+                padding: 10px 12px;
+            }
+            
+            .format-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+            
+            .format-btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+        }
+
+        .added-format {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 8px 0;
+            font-size: 14px;
+            color: #234e52;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .remove-format {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f56565;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-format:hover {
+            background: #e53e3e;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-copy {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-reset {
+            background: linear-gradient(45deg, #ed8936, #dd6b20);
+            color: white;
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(237, 137, 54, 0.4);
+        }
+
+        .btn-clear {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+            color: white;
+        }
+
+        .btn-clear:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 101, 101, 0.4);
+        }
+
+        /* Modal 樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: modalAppear 0.3s ease;
+        }
+
+        @keyframes modalAppear {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal h3 {
+            margin-top: 0;
+            color: #2d3748;
+            font-size: 1.3rem;
+        }
+
+        .modal input, .modal textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 15px 0;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .modal textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .modal input:focus, .modal textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            font-weight: 500;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .example {
+            background: #f0f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .example h4 {
+            margin: 0 0 10px 0;
+            color: #2d3748;
+        }
+
+        .example code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .url-share-section {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .url-share-section h4 {
+            margin: 0 0 8px 0;
+            color: #0c4a6e;
+            font-size: 1rem;
+        }
+
+        .btn-share {
+            background: linear-gradient(45deg, #0ea5e9, #0284c7);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-share:hover {
+            background: linear-gradient(45deg, #0284c7, #0369a1);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+        }
+
+        .empty-template {
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Prompt 模板填入工具</h1>
+        
+        <div class="template-header">
+            <h2 class="template-title">📋 點擊下方標籤進行填入</h2>
+            <button class="edit-template-btn" onclick="openTemplateEditor()">✏️ 編輯模板</button>
+        </div>
+
+        <div class="template-display" id="templateDisplay">
+            <div class="empty-template">
+                請點擊「編輯模板」開始設定你的 prompt 模板...
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎨 快速添加格式要求</h2>
+            
+            <div class="format-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="switchTab('output')">📊 輸出格式</button>
+                    <button class="tab-btn" onclick="switchTab('length')">📏 長度控制</button>
+                    <button class="tab-btn" onclick="switchTab('structure')">🏗️ 結構要求</button>
+                    <button class="tab-btn" onclick="switchTab('style')">🎯 語言風格</button>
+                    <button class="tab-btn" onclick="switchTab('special')">📋 特殊要求</button>
+                </div>
+                
+                <div class="tab-content">
+                    <div class="tab-panel active" id="tab-output">
+                        <div class="format-buttons">
+                            <button class="format-btn" onclick="addFormat('請將結果以表格形式輸出。')">表格格式</button>
+                            <button class="format-btn" onclick="addFormat('請將結果以條列式呈現。')">條列清單</button>
+                            <button class="format-btn" onclick="addFormat('請將結果以 JSON 格式輸出。')">JSON格式</button>
+                            <button class="format-btn" onclick="addFormat('請以段落形式詳細說明。')">段落說明</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-panel" id="tab-length">
+                        <div class="format-buttons">
+                            <button class="format-btn" onclick="addFormat('請以不超過 50 字簡潔回答。')">50字內</button>
+                            <button class="format-btn" onclick="addFormat('請以不超過 100 字說明。')">100字內</button>
+                            <button class="format-btn" onclick="addFormat('請提供詳細完整的分析。')">詳細分析</button>
+                            <button class="format-btn" onclick="addFormat('請提供重點摘要。')">重點摘要</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-panel" id="tab-structure">
+                        <div class="format-buttons">
+                            <button class="format-btn" onclick="addFormat('請分 3-5 個重點說明。')">分點說明</button>
+                            <button class="format-btn" onclick="addFormat('請以步驟式方式說明。')">步驟說明</button>
+                            <button class="format-btn" onclick="addFormat('請以問答形式呈現。')">問答形式</button>
+                            <button class="format-btn" onclick="addFormat('請進行優缺點比較。')">比較對照</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-panel" id="tab-style">
+                        <div class="format-buttons">
+                            <button class="format-btn" onclick="addFormat('請使用專業術語進行說明。')">專業術語</button>
+                            <button class="format-btn" onclick="addFormat('請用淺顯易懂的方式說明。')">淺顯易懂</button>
+                            <button class="format-btn" onclick="addFormat('請以商業報告的格式呈現。')">商業報告</button>
+                            <button class="format-btn" onclick="addFormat('請以學術論文的風格撰寫。')">學術風格</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-panel" id="tab-special">
+                        <div class="format-buttons">
+                            <button class="format-btn" onclick="addFormat('請提供具體例子說明。')">包含例子</button>
+                            <button class="format-btn" onclick="addFormat('請盡量提供相關數據支持。')">數據支持</button>
+                            <button class="format-btn" onclick="addFormat('請評估可行性並說明風險。')">可行性分析</button>
+                            <button class="format-btn" onclick="addFormat('請提供行動建議。')">行動建議</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-action btn-copy" onclick="copyResult()">📋 複製結果</button>
+            <button class="btn-action btn-reset" onclick="resetTemplate()">🔄 重置填入</button>
+            <button class="btn-action btn-clear" onclick="clearFormats()">🎨 清除格式</button>
+            <button class="btn-action btn-clear" onclick="clearAll()">🗑️ 清空全部</button>
+        </div>
+    </div>
+
+    <!-- 模板編輯 Modal -->
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <h3>✏️ 編輯 Prompt 模板</h3>
+            <div class="example">
+                <h4>使用說明：</h4>
+                <p>在模板中用方括號 <code>[xxx]</code> 標記需要填入的部分，例如：</p>
+                <code>請幫我找出 [產品類型] 在 [市場區域] 的使用行為與購買趨勢</code>
+            </div>
+            <textarea id="templateInput" placeholder="請輸入你的 prompt 模板，用 [xxx] 標記需要填入的地方...
+
+範例：
+請幫我找出 [產品類型/族群] 在 [市場區域] 的使用行為與購買趨勢，並說明主要的消費動機與痛點。
+
+分析 [品牌名稱] 在 [競爭對手] 面前的優勢和劣勢，並提出 [改善建議類型] 的策略建議。"></textarea>
+            
+            <div class="url-share-section">
+                <h4>🔗 分享模板</h4>
+                <p style="color: #718096; font-size: 14px; margin-bottom: 10px;">複製連結來分享你的模板給其他人</p>
+                <button class="btn btn-share" onclick="copyTemplateUrl()">📋 複製分享連結</button>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeTemplateEditor()">取消</button>
+                <button class="btn btn-primary" onclick="saveTemplate()">儲存模板</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 填入內容 Modal -->
+    <div id="fillModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">填入內容</h3>
+            <p id="modalHint" style="color: #718096; margin-bottom: 10px;"></p>
+            <input type="text" id="modalInput" placeholder="請輸入內容...">
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeFillModal()">取消</button>
+                <button class="btn btn-primary" onclick="confirmFill()">確認</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知 -->
+    <div id="notification" class="notification">
+        已複製到剪貼簿！
+    </div>
+
+    <script>
+        let currentPlaceholderIndex = -1;
+        let placeholders = [];
+        let filledValues = {};
+        let addedFormats = [];
+        let currentTemplate = '';
+
+        // 定義格式衝突規則
+        const formatConflicts = {
+            // 長度控制 - 互斥
+            length: [
+                '請以不超過 50 字簡潔回答。',
+                '請以不超過 100 字說明。',
+                '請提供詳細完整的分析。',
+                '請提供重點摘要。'
+            ],
+            // 輸出格式 - 互斥
+            outputFormat: [
+                '請將結果以表格形式輸出。',
+                '請將結果以條列式呈現。',
+                '請將結果以 JSON 格式輸出。',
+                '請以段落形式詳細說明。'
+            ],
+            // 結構要求 - 部分互斥
+            structure: [
+                '請分 3-5 個重點說明。',
+                '請以步驟式方式說明。',
+                '請以問答形式呈現。'
+            ],
+            // 語言風格 - 互斥
+            style: [
+                '請使用專業術語進行說明。',
+                '請用淺顯易懂的方式說明。',
+                '請以商業報告的格式呈現。',
+                '請以學術論文的風格撰寫。'
+            ]
+        };
+
+        const templateDisplay = document.getElementById('templateDisplay');
+        const templateModal = document.getElementById('templateModal');
+        const fillModal = document.getElementById('fillModal');
+        const templateInput = document.getElementById('templateInput');
+        const modalInput = document.getElementById('modalInput');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalHint = document.getElementById('modalHint');
+
+        // 初始化
+        loadDefaultTemplate();
+
+        function switchTab(tabId) {
+            // 移除所有 tab 的 active 狀態
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+
+            // 激活選中的 tab
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        function loadDefaultTemplate() {
+            // 首先檢查 URL 參數是否有模板
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlTemplate = urlParams.get('prompt');
+            
+            if (urlTemplate) {
+                try {
+                    // URLSearchParams 已經自動解碼了，不需要再次 decodeURIComponent
+                    currentTemplate = urlTemplate;
+                    templateInput.value = currentTemplate;
+                    parseTemplate();
+                    console.log('從 URL 載入模板:', currentTemplate);
+                    return;
+                } catch (error) {
+                    console.error('解析 URL 參數失敗:', error);
+                    // 如果解析失敗，繼續使用預設模板
+                }
+            }
+            
+            // 使用預設模板
+            currentTemplate = '請幫我找出 [產品類型/族群] 在 [市場區域] 的使用行為與購買趨勢，並說明主要的消費動機與痛點。';
+            templateInput.value = currentTemplate;
+            parseTemplate();
+        }
+
+        function openTemplateEditor() {
+            templateModal.style.display = 'block';
+            templateInput.focus();
+        }
+
+        function closeTemplateEditor() {
+            templateModal.style.display = 'none';
+        }
+
+        function saveTemplate() {
+            currentTemplate = templateInput.value.trim();
+            if (currentTemplate) {
+                parseTemplate();
+                closeTemplateEditor();
+            }
+        }
+
+        function parseTemplate() {
+            if (!currentTemplate) {
+                templateDisplay.innerHTML = '<div class="empty-template">請點擊「編輯模板」開始設定你的 prompt 模板...</div>';
+                return;
+            }
+
+            // 重置填入值但保留格式
+            filledValues = {};
+            
+            // 找出所有占位符
+            const placeholderRegex = /\[([^\]]+)\]/g;
+            placeholders = [];
+            let match;
+            
+            while ((match = placeholderRegex.exec(currentTemplate)) !== null) {
+                placeholders.push({
+                    full: match[0],
+                    content: match[1],
+                    index: placeholders.length
+                });
+            }
+
+            renderTemplate();
+        }
+
+        function renderTemplate() {
+            let template = currentTemplate;
+            
+            placeholders.forEach((placeholder, index) => {
+                const value = filledValues[index];
+                const displayText = value || placeholder.content;
+                const isFilledClass = value ? 'filled' : '';
+                
+                const span = `<span class="placeholder ${isFilledClass}" onclick="openFillModal(${index})" title="點擊填入: ${placeholder.content}">${displayText}</span>`;
+                template = template.replace(placeholder.full, span);
+            });
+
+            // 添加格式要求
+            if (addedFormats.length > 0) {
+                template += '<br><br>';
+                addedFormats.forEach((format, index) => {
+                    template += `<div class="added-format">${format}<button class="remove-format" onclick="removeFormat(${index})" title="移除此格式">×</button></div>`;
+                });
+            }
+
+            templateDisplay.innerHTML = template;
+            updateButtonStates();
+        }
+
+        function openFillModal(index) {
+            currentPlaceholderIndex = index;
+            const placeholder = placeholders[index];
+            
+            modalTitle.textContent = `填入：${placeholder.content}`;
+            modalHint.textContent = `請為「${placeholder.content}」輸入具體內容`;
+            modalInput.value = filledValues[index] || '';
+            fillModal.style.display = 'block';
+            
+            setTimeout(() => modalInput.focus(), 100);
+        }
+
+        function closeFillModal() {
+            fillModal.style.display = 'none';
+            currentPlaceholderIndex = -1;
+        }
+
+        function confirmFill() {
+            const value = modalInput.value.trim();
+            
+            if (value && currentPlaceholderIndex >= 0) {
+                filledValues[currentPlaceholderIndex] = value;
+                renderTemplate();
+            }
+            
+            closeFillModal();
+        }
+
+        function addFormat(formatText) {
+            // 檢查是否已經存在完全相同的格式
+            if (addedFormats.includes(formatText)) {
+                return;
+            }
+
+            // 檢查衝突並移除衝突的格式
+            for (const [category, formats] of Object.entries(formatConflicts)) {
+                if (formats.includes(formatText)) {
+                    // 移除同類別的其他格式
+                    addedFormats = addedFormats.filter(existing => !formats.includes(existing));
+                    break;
+                }
+            }
+
+            // 添加新格式
+            addedFormats.push(formatText);
+            renderTemplate();
+            
+            // 視覺反饋
+            highlightFormatButton(formatText);
+        }
+
+        function highlightFormatButton(formatText) {
+            const buttons = document.querySelectorAll('.format-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent === getButtonText(formatText)) {
+                    btn.style.background = 'linear-gradient(45deg, #48bb78, #38a169)';
+                    btn.style.color = 'white';
+                    btn.style.transform = 'scale(1.05)';
+                    
+                    setTimeout(() => {
+                        btn.style.background = '';
+                        btn.style.color = '';
+                        btn.style.transform = '';
+                        updateButtonStates(); // 確保狀態正確更新
+                    }, 300);
+                }
+            });
+        }
+
+        function getButtonText(formatText) {
+            const buttonMap = {
+                '請將結果以表格形式輸出。': '表格格式',
+                '請將結果以條列式呈現。': '條列清單',
+                '請將結果以 JSON 格式輸出。': 'JSON格式',
+                '請以段落形式詳細說明。': '段落說明',
+                '請以不超過 50 字簡潔回答。': '50字內',
+                '請以不超過 100 字說明。': '100字內',
+                '請提供詳細完整的分析。': '詳細分析',
+                '請提供重點摘要。': '重點摘要',
+                '請分 3-5 個重點說明。': '分點說明',
+                '請以步驟式方式說明。': '步驟說明',
+                '請以問答形式呈現。': '問答形式',
+                '請進行優缺點比較。': '比較對照',
+                '請使用專業術語進行說明。': '專業術語',
+                '請用淺顯易懂的方式說明。': '淺顯易懂',
+                '請以商業報告的格式呈現。': '商業報告',
+                '請以學術論文的風格撰寫。': '學術風格',
+                '請提供具體例子說明。': '包含例子',
+                '請盡量提供相關數據支持。': '數據支持',
+                '請評估可行性並說明風險。': '可行性分析',
+                '請提供行動建議。': '行動建議'
+            };
+            return buttonMap[formatText] || '';
+        }
+
+        function updateButtonStates() {
+            const buttons = document.querySelectorAll('.format-btn');
+            buttons.forEach(btn => {
+                const formatText = getFormatTextFromButton(btn.textContent);
+                if (addedFormats.includes(formatText)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function getFormatTextFromButton(buttonText) {
+            const reverseButtonMap = {
+                '表格格式': '請將結果以表格形式輸出。',
+                '條列清單': '請將結果以條列式呈現。',
+                'JSON格式': '請將結果以 JSON 格式輸出。',
+                '段落說明': '請以段落形式詳細說明。',
+                '50字內': '請以不超過 50 字簡潔回答。',
+                '100字內': '請以不超過 100 字說明。',
+                '詳細分析': '請提供詳細完整的分析。',
+                '重點摘要': '請提供重點摘要。',
+                '分點說明': '請分 3-5 個重點說明。',
+                '步驟說明': '請以步驟式方式說明。',
+                '問答形式': '請以問答形式呈現。',
+                '比較對照': '請進行優缺點比較。',
+                '專業術語': '請使用專業術語進行說明。',
+                '淺顯易懂': '請用淺顯易懂的方式說明。',
+                '商業報告': '請以商業報告的格式呈現。',
+                '學術風格': '請以學術論文的風格撰寫。',
+                '包含例子': '請提供具體例子說明。',
+                '數據支持': '請盡量提供相關數據支持。',
+                '可行性分析': '請評估可行性並說明風險。',
+                '行動建議': '請提供行動建議。'
+            };
+            return reverseButtonMap[buttonText] || '';
+        }
+
+        function removeFormat(index) {
+            addedFormats.splice(index, 1);
+            renderTemplate();
+        }
+
+        function resetTemplate() {
+            filledValues = {};
+            renderTemplate();
+        }
+
+        function clearFormats() {
+            addedFormats = [];
+            renderTemplate();
+        }
+
+        function clearAll() {
+            currentTemplate = '';
+            templateInput.value = '';
+            filledValues = {};
+            placeholders = [];
+            addedFormats = [];
+            templateDisplay.innerHTML = '<div class="empty-template">請點擊「編輯模板」開始設定你的 prompt 模板...</div>';
+        }
+
+        function copyTemplateUrl() {
+            const currentPrompt = templateInput.value.trim();
+            if (!currentPrompt) {
+                showNotification('⚠️ 請先輸入模板內容', '#f56565');
+                return;
+            }
+
+            try {
+                // URL encode 模板內容
+                const encodedPrompt = encodeURIComponent(currentPrompt);
+                const baseUrl = window.location.origin + window.location.pathname;
+                const shareUrl = `${baseUrl}?prompt=${encodedPrompt}`;
+                
+                // 複製到剪貼簿
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        showNotification('🔗 分享連結已複製到剪貼簿！', '#0ea5e9');
+                    }).catch((error) => {
+                        console.error('Clipboard API failed:', error);
+                        fallbackCopyToClipboard(shareUrl);
+                    });
+                } else {
+                    fallbackCopyToClipboard(shareUrl);
+                }
+            } catch (error) {
+                console.error('產生分享連結失敗:', error);
+                showNotification('❌ 產生分享連結失敗', '#f56565');
+            }
+        }
+
+        function fallbackCopyToClipboard(text) {
+            try {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                if (successful) {
+                    showNotification('🔗 分享連結已複製到剪貼簿！', '#0ea5e9');
+                } else {
+                    showNotification('❌ 複製失敗，請手動複製', '#f56565');
+                }
+            } catch (error) {
+                console.error('Fallback copy failed:', error);
+                showNotification('❌ 複製失敗，請手動複製', '#f56565');
+            }
+        }
+
+        function copyResult() {
+            let result = currentTemplate;
+            
+            placeholders.forEach((placeholder, index) => {
+                const value = filledValues[index];
+                if (value) {
+                    result = result.replace(placeholder.full, value);
+                }
+            });
+
+            // 添加格式要求到結果中
+            if (addedFormats.length > 0) {
+                result += '\n\n' + addedFormats.join(' ');
+            }
+
+            // 複製到剪貼簿
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(result).then(() => {
+                    showNotification('📋 已複製到剪貼簿！');
+                }).catch((error) => {
+                    console.error('Clipboard API failed:', error);
+                    fallbackCopyToClipboard(result);
+                });
+            } else {
+                fallbackCopyToClipboard(result);
+            }
+        }
+
+        // 鍵盤快捷鍵
+        document.addEventListener('keydown', (e) => {
+            // ESC 關閉 modal
+            if (e.key === 'Escape') {
+                if (fillModal.style.display === 'block') {
+                    closeFillModal();
+                }
+                if (templateModal.style.display === 'block') {
+                    closeTemplateEditor();
+                }
+            }
+            
+            // Enter 確認
+            if (e.key === 'Enter') {
+                if (fillModal.style.display === 'block') {
+                    confirmFill();
+                } else if (templateModal.style.display === 'block' && e.ctrlKey) {
+                    saveTemplate();
+                }
+            }
+            
+            // Ctrl+C 複製結果
+            if (e.ctrlKey && e.key === 'c' && fillModal.style.display !== 'block' && templateModal.style.display !== 'block') {
+                if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    copyResult();
+                }
+            }
+        });
+
+        // 點擊 modal 外部關閉
+        fillModal.addEventListener('click', (e) => {
+            if (e.target === fillModal) {
+                closeFillModal();
+            }
+        });
+
+        templateModal.addEventListener('click', (e) => {
+            if (e.target === templateModal) {
+                closeTemplateEditor();
+            }
+        });
+
+        // 顯示通知
+        function showNotification(message, color = '#48bb78') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = color;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
