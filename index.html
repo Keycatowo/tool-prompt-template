@@ -57,6 +57,30 @@
             margin: 0;
         }
 
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-reset-header {
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reset-header:hover {
+            background: linear-gradient(45deg, #3182ce, #2c5282);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+        }
+
         .edit-template-btn {
             background: linear-gradient(45deg, #ed8936, #dd6b20);
             color: white;
@@ -595,7 +619,10 @@
         
         <div class="template-header">
             <h2 class="template-title">📋 點擊下方標籤進行填入</h2>
-            <button class="edit-template-btn" onclick="openTemplateEditor()">✏️ 編輯模板</button>
+            <div class="header-buttons">
+                <button class="btn-reset-header" onclick="resetTemplate()">🔄 重置填入</button>
+                <button class="edit-template-btn" onclick="openTemplateEditor()">✏️ 編輯模板</button>
+            </div>
         </div>
 
         <div class="template-display" id="templateDisplay">
@@ -668,7 +695,6 @@
         <div class="action-buttons">
             <button class="btn-action btn-chatgpt" onclick="openInChatGPT()">💬 在ChatGPT中開啟</button>
             <button class="btn-action btn-copy" onclick="copyResult()">📋 複製結果</button>
-            <button class="btn-action btn-reset" onclick="resetTemplate()">🔄 重置填入</button>
             <button class="btn-action btn-clear" onclick="clearFormats()">🎨 清除格式</button>
             <button class="btn-action btn-clear" onclick="clearAll()">🗑️ 清空全部</button>
         </div>
@@ -1466,7 +1492,7 @@
     
     <!-- Version Footer -->
     <div style="text-align: center; margin-top: 20px; padding: 10px; color: #888; font-size: 12px; border-top: 1px solid #eee;">
-        版本 v0.3.0
+        版本 v0.3.1
     </div>
 </body>
 </html>
