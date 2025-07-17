@@ -256,6 +256,16 @@
                 padding: 10px 16px;
                 font-size: 13px;
             }
+            
+            .action-buttons {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            
+            .btn-chatgpt {
+                grid-column: 1 / -1;
+                order: -1;
+            }
         }
 
         .added-format {
@@ -314,6 +324,16 @@
             transition: all 0.3s ease;
             flex: 1;
             min-width: 120px;
+        }
+
+        .btn-chatgpt {
+            background: linear-gradient(45deg, #10a37f, #0d8b6b);
+            color: white;
+        }
+
+        .btn-chatgpt:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 163, 127, 0.4);
         }
 
         .btn-copy {
@@ -637,6 +657,7 @@
         </div>
 
         <div class="action-buttons">
+            <button class="btn-action btn-chatgpt" onclick="openInChatGPT()">💬 在ChatGPT中開啟</button>
             <button class="btn-action btn-copy" onclick="copyResult()">📋 複製結果</button>
             <button class="btn-action btn-reset" onclick="resetTemplate()">🔄 重置填入</button>
             <button class="btn-action btn-clear" onclick="clearFormats()">🎨 清除格式</button>
@@ -681,6 +702,7 @@
                 <br><br>
                 <p>支持選項格式： <code>[標籤，例如：選項A／選項B／選項C]</code></p>
                 <p>當你使用選項格式時，點擊占位符會顯示快速選擇按鈕，讓填入更方便！</p>
+                <p><strong>快捷鍵：</strong> Ctrl+C 複製結果、Ctrl+Enter 在 ChatGPT 中開啟</p>
             </div>
             
             <div class="url-share-section">
@@ -1318,7 +1340,7 @@
             }
         }
 
-        function copyResult() {
+        function generateResult() {
             let result = currentTemplate;
             
             placeholders.forEach((placeholder, index) => {
@@ -1332,6 +1354,29 @@
             if (addedFormats.length > 0) {
                 result += '\n\n' + addedFormats.join(' ');
             }
+
+            return result;
+        }
+
+        function openInChatGPT() {
+            const result = generateResult();
+            
+            if (!result.trim()) {
+                showNotification('⚠️ 請先設定模板並填入內容', '#f56565');
+                return;
+            }
+            
+            // URL encode the result
+            const encodedPrompt = encodeURIComponent(result);
+            const chatGPTUrl = `https://chatgpt.com/?q=${encodedPrompt}`;
+            
+            // Open in new tab
+            window.open(chatGPTUrl, '_blank');
+            showNotification('💬 已在新分頁開啟 ChatGPT！');
+        }
+
+        function copyResult() {
+            const result = generateResult();
 
             // 複製到剪貼簿
             if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1372,6 +1417,14 @@
                 if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
                     e.preventDefault();
                     copyResult();
+                }
+            }
+            
+            // Ctrl+Enter 在 ChatGPT 中開啟
+            if (e.ctrlKey && e.key === 'Enter' && fillModal.style.display !== 'block' && templateModal.style.display !== 'block') {
+                if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    openInChatGPT();
                 }
             }
         });
