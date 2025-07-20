@@ -295,9 +295,22 @@
                 gap: 10px;
             }
             
-            .btn-chatgpt {
+            .chatgpt-button-group {
                 grid-column: 1 / -1;
                 order: -1;
+            }
+
+            .btn-model-selector {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border-radius: 8px;
+                margin-top: 5px;
+            }
+
+            .chatgpt-button-group .btn-chatgpt {
+                border-radius: 8px;
+                margin-right: 0;
             }
         }
 
@@ -367,6 +380,84 @@
         .btn-chatgpt:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(16, 163, 127, 0.4);
+        }
+
+        .chatgpt-button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            position: relative;
+        }
+
+        .chatgpt-button-group .btn-chatgpt {
+            border-radius: 8px 0 0 8px;
+            margin-right: 0;
+        }
+
+        .btn-model-selector {
+            background: linear-gradient(45deg, #0d8b6b, #0a7557);
+            color: white;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-size: 12px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-model-selector:hover {
+            background: linear-gradient(45deg, #0a7557, #086145);
+        }
+
+        .model-selector-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+            min-width: 120px;
+        }
+
+        .model-selector-dropdown.show {
+            display: block;
+        }
+
+        .model-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .model-option:last-child {
+            border-bottom: none;
+        }
+
+        .model-option:hover {
+            background: #f5f5f5;
+        }
+
+        .model-option.selected {
+            background: #10a37f;
+            color: white;
+        }
+
+        .selected-model-display {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 2px;
         }
 
         .btn-copy {
@@ -693,7 +784,17 @@
         </div>
 
         <div class="action-buttons">
-            <button class="btn-action btn-chatgpt" onclick="openInChatGPT()">💬 在ChatGPT中開啟</button>
+            <div class="chatgpt-button-group">
+                <button class="btn-action btn-chatgpt" onclick="openInChatGPT()">💬 在ChatGPT中開啟</button>
+                <button class="btn-model-selector" onclick="toggleModelSelector()">▼</button>
+                <div class="model-selector-dropdown" id="modelSelector">
+                    <div class="model-option" data-model="o4-mini">o4-mini</div>
+                    <div class="model-option" data-model="gpt-4o">GPT-4o</div>
+                    <div class="model-option" data-model="gpt-4o-mini">GPT-4o mini</div>
+                    <div class="model-option" data-model="gpt-4">GPT-4</div>
+                </div>
+                <div class="selected-model-display">o4-mini</div>
+            </div>
             <button class="btn-action btn-copy" onclick="copyResult()">📋 複製結果</button>
             <button class="btn-action btn-clear" onclick="clearFormats()">🎨 清除格式</button>
             <button class="btn-action btn-clear" onclick="clearAll()">🗑️ 清空全部</button>
@@ -1375,6 +1476,9 @@
             }
         }
 
+        // 全局變量存儲選中的模型
+        let selectedModel = 'o4-mini';
+
         function generateResult() {
             let result = currentTemplate;
             
@@ -1393,6 +1497,45 @@
             return result;
         }
 
+        function toggleModelSelector() {
+            const dropdown = document.getElementById('modelSelector');
+            dropdown.classList.toggle('show');
+        }
+
+        function selectModel(model) {
+            selectedModel = model;
+            document.querySelector('.selected-model-display').textContent = model;
+            
+            // 更新選中狀態
+            document.querySelectorAll('.model-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector(`[data-model="${model}"]`).classList.add('selected');
+            
+            // 隱藏下拉選單
+            document.getElementById('modelSelector').classList.remove('show');
+        }
+
+        // 初始化模型選擇器
+        function initModelSelector() {
+            // 設定預設選中狀態
+            document.querySelector('[data-model="o4-mini"]').classList.add('selected');
+            
+            // 為每個選項添加點擊事件
+            document.querySelectorAll('.model-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    selectModel(this.dataset.model);
+                });
+            });
+            
+            // 點擊外部關閉下拉選單
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.chatgpt-button-group')) {
+                    document.getElementById('modelSelector').classList.remove('show');
+                }
+            });
+        }
+
         function openInChatGPT() {
             const result = generateResult();
             
@@ -1403,11 +1546,11 @@
             
             // URL encode the result
             const encodedPrompt = encodeURIComponent(result);
-            const chatGPTUrl = `https://chatgpt.com/?q=${encodedPrompt}`;
+            const chatGPTUrl = `https://chatgpt.com/?model=${selectedModel}&q=${encodedPrompt}`;
             
             // Open in new tab
             window.open(chatGPTUrl, '_blank');
-            showNotification('💬 已在新分頁開啟 ChatGPT！');
+            showNotification(`💬 已在新分頁開啟 ChatGPT (${selectedModel})！`);
         }
 
         function copyResult() {
@@ -1488,11 +1631,16 @@
                 notification.classList.remove('show');
             }, 3000);
         }
+
+        // 頁面載入時初始化模型選擇器
+        document.addEventListener('DOMContentLoaded', function() {
+            initModelSelector();
+        });
     </script>
     
     <!-- Version Footer -->
     <div style="text-align: center; margin-top: 20px; padding: 10px; color: #888; font-size: 12px; border-top: 1px solid #eee;">
-        版本 v0.3.1
+        版本 v0.3.2
     </div>
 </body>
 </html>
