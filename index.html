@@ -295,22 +295,30 @@
                 gap: 10px;
             }
             
-            .chatgpt-button-group {
+            .action-row-1 {
                 grid-column: 1 / -1;
                 order: -1;
+                margin-bottom: 10px;
             }
 
-            .btn-model-selector {
-                position: relative;
-                width: 100%;
-                height: auto;
-                border-radius: 8px;
-                margin-top: 5px;
+            .chatgpt-button-group {
+                grid-column: 1 / -1;
+                order: 0;
+            }
+
+            .chatgpt-buttons-row {
+                flex-direction: column;
+                gap: 8px;
             }
 
             .chatgpt-button-group .btn-chatgpt {
                 border-radius: 8px;
                 margin-right: 0;
+            }
+
+            .btn-model-selector {
+                border-radius: 8px;
+                min-width: 100%;
             }
         }
 
@@ -355,9 +363,9 @@
 
         .action-buttons {
             display: flex;
+            flex-direction: column;
             gap: 15px;
             margin-top: 20px;
-            flex-wrap: wrap;
         }
 
         .btn-action {
@@ -387,33 +395,42 @@
             flex-direction: column;
             gap: 5px;
             position: relative;
+            width: 100%;
+        }
+
+        .chatgpt-buttons-row {
+            display: flex;
+            align-items: center;
+            gap: 0;
         }
 
         .chatgpt-button-group .btn-chatgpt {
             border-radius: 8px 0 0 8px;
             margin-right: 0;
+            flex: 1;
         }
 
         .btn-model-selector {
             background: linear-gradient(45deg, #0d8b6b, #0a7557);
             color: white;
             border: none;
-            padding: 8px 10px;
+            padding: 10px 20px;
             border-radius: 0 8px 8px 0;
             cursor: pointer;
-            font-size: 12px;
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: 100%;
-            width: 30px;
+            font-size: 14px;
+            font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: center;
+            min-width: 45px;
+            transition: all 0.3s ease;
+            height: 44px;
         }
 
         .btn-model-selector:hover {
             background: linear-gradient(45deg, #0a7557, #086145);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(10, 117, 87, 0.4);
         }
 
         .model-selector-dropdown {
@@ -453,11 +470,43 @@
             color: white;
         }
 
-        .selected-model-display {
-            font-size: 12px;
-            color: #666;
-            text-align: center;
-            margin-top: 2px;
+        .action-row-1 {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .action-row-1 .btn-action {
+            flex: 1;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+        }
+
+        .btn-clear-formats {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-clear-formats:hover {
+            background: linear-gradient(45deg, #e53e3e, #c53030);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 101, 101, 0.4);
         }
 
         .btn-copy {
@@ -723,7 +772,10 @@
         </div>
 
         <div class="section">
-            <h2>🎨 快速添加格式要求</h2>
+            <div class="section-header">
+                <h2>🎨 快速添加格式要求</h2>
+                <button class="btn-clear-formats" id="clearFormatsBtn" onclick="clearFormats()" style="display: none;">🗑️ 清除格式</button>
+            </div>
             
             <div class="format-tabs">
                 <div class="tab-buttons">
@@ -784,20 +836,23 @@
         </div>
 
         <div class="action-buttons">
+            <div class="action-row-1">
+                <button class="btn-action btn-copy" onclick="copyResult()">📋 複製結果</button>
+                <button class="btn-action btn-clear" onclick="clearAll()">🗑️ 清空全部</button>
+            </div>
             <div class="chatgpt-button-group">
-                <button class="btn-action btn-chatgpt" onclick="openInChatGPT()">💬 在ChatGPT中開啟</button>
-                <button class="btn-model-selector" onclick="toggleModelSelector()">▼</button>
+                <div class="chatgpt-buttons-row">
+                    <button class="btn-action btn-chatgpt" id="chatgptBtn" onclick="openInChatGPT()">💬 在ChatGPT中開啟 (o4-mini)</button>
+                    <button class="btn-model-selector" onclick="toggleModelSelector()">⚙️</button>
+                </div>
                 <div class="model-selector-dropdown" id="modelSelector">
                     <div class="model-option" data-model="o4-mini">o4-mini</div>
-                    <div class="model-option" data-model="gpt-4o">GPT-4o</div>
-                    <div class="model-option" data-model="gpt-4o-mini">GPT-4o mini</div>
-                    <div class="model-option" data-model="gpt-4">GPT-4</div>
+                    <div class="model-option" data-model="gpt-4o">4o</div>
+                    <div class="model-option" data-model="o3">o3</div>
+                    <div class="model-option" data-model="gpt-4-1">gpt 4.1</div>
+                    <div class="model-option" data-model="gpt-4-1-mini">gpt 4.1-mini</div>
                 </div>
-                <div class="selected-model-display">o4-mini</div>
             </div>
-            <button class="btn-action btn-copy" onclick="copyResult()">📋 複製結果</button>
-            <button class="btn-action btn-clear" onclick="clearFormats()">🎨 清除格式</button>
-            <button class="btn-action btn-clear" onclick="clearAll()">🗑️ 清空全部</button>
         </div>
     </div>
 
@@ -1310,6 +1365,7 @@
             // 添加新格式
             addedFormats.push(formatText);
             renderTemplate();
+            updateClearFormatsButton();
             
             // 視覺反饋
             highlightFormatButton(formatText);
@@ -1400,6 +1456,7 @@
         function removeFormat(index) {
             addedFormats.splice(index, 1);
             renderTemplate();
+            updateClearFormatsButton();
         }
 
         function resetTemplate() {
@@ -1410,6 +1467,16 @@
         function clearFormats() {
             addedFormats = [];
             renderTemplate();
+            updateClearFormatsButton();
+        }
+
+        function updateClearFormatsButton() {
+            const clearBtn = document.getElementById('clearFormatsBtn');
+            if (addedFormats.length > 0) {
+                clearBtn.style.display = 'block';
+            } else {
+                clearBtn.style.display = 'none';
+            }
         }
 
         function clearAll() {
@@ -1419,6 +1486,7 @@
             placeholders = [];
             addedFormats = [];
             templateDisplay.innerHTML = '<div class="empty-template">請點擊「編輯模板」開始設定你的 prompt 模板...</div>';
+            updateClearFormatsButton();
         }
 
         function copyTemplateUrl() {
@@ -1504,7 +1572,9 @@
 
         function selectModel(model) {
             selectedModel = model;
-            document.querySelector('.selected-model-display').textContent = model;
+            
+            // 更新按鈕文字
+            document.getElementById('chatgptBtn').textContent = `💬 在ChatGPT中開啟 (${model})`;
             
             // 更新選中狀態
             document.querySelectorAll('.model-option').forEach(option => {
@@ -1640,7 +1710,7 @@
     
     <!-- Version Footer -->
     <div style="text-align: center; margin-top: 20px; padding: 10px; color: #888; font-size: 12px; border-top: 1px solid #eee;">
-        版本 v0.3.2
+        版本 v0.3.3
     </div>
 </body>
 </html>
