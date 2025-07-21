@@ -1013,10 +1013,23 @@
             const urlParams = new URLSearchParams(window.location.search);
             const urlTemplate = urlParams.get('prompt');
             
-            if (urlTemplate) {
+            if (urlTemplate && urlTemplate.trim()) {
                 try {
                     // URLSearchParams 已經自動解碼了，不需要再次 decodeURIComponent
-                    currentTemplate = urlTemplate;
+                    // 但為了確保完整性，我們對特殊字符進行額外處理
+                    let decodedTemplate = urlTemplate;
+                    
+                    // 處理可能的雙重編碼問題
+                    try {
+                        // 如果內容看起來像是被編碼過的，嘗試解碼一次
+                        if (decodedTemplate.includes('%')) {
+                            decodedTemplate = decodeURIComponent(decodedTemplate);
+                        }
+                    } catch (decodeError) {
+                        console.warn('二次解碼失敗，使用原始值:', decodeError);
+                    }
+                    
+                    currentTemplate = decodedTemplate;
                     templateInput.value = currentTemplate;
                     parseTemplate();
                     autoResizeTextarea(templateInput);
@@ -1710,7 +1723,7 @@
     
     <!-- Version Footer -->
     <div style="text-align: center; margin-top: 20px; padding: 10px; color: #888; font-size: 12px; border-top: 1px solid #eee;">
-        版本 v0.3.3
+        版本 v0.3.4
     </div>
 </body>
 </html>

@@ -1,6 +1,6 @@
 {
   "name": "prompt-template",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Prompt 模板填入工具 - 一個用於建立和填入 AI prompt 模板的工具",
   "main": "index.html",
   "scripts": {
