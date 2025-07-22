@@ -67,7 +67,7 @@
             background: linear-gradient(45deg, #4299e1, #3182ce);
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
@@ -290,35 +290,66 @@
                 font-size: 13px;
             }
             
-            .action-buttons {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-            
             .action-row-1 {
-                grid-column: 1 / -1;
-                order: -1;
+                flex-direction: column;
+                gap: 10px;
                 margin-bottom: 10px;
             }
-
-            .chatgpt-button-group {
-                grid-column: 1 / -1;
-                order: 0;
+            
+            .action-row-1 .btn-action {
+                flex: none;
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .action-row-1 .chatgpt-button-group {
+                flex: none;
+                min-width: auto;
+                width: 100%;
             }
 
             .chatgpt-buttons-row {
-                flex-direction: column;
-                gap: 8px;
+                /* 保持水平排列，不要改為垂直 */
+                flex-direction: row;
+                gap: 0;
+                width: 100%;
             }
 
             .chatgpt-button-group .btn-chatgpt {
-                border-radius: 8px;
+                border-radius: 8px 0 0 8px;
                 margin-right: 0;
+                flex: 1;
+                min-width: 0;
             }
 
             .btn-model-selector {
-                border-radius: 8px;
-                min-width: 100%;
+                border-radius: 0 8px 8px 0;
+                min-width: 45px;
+                flex-shrink: 0;
+            }
+            
+            .action-row-clear {
+                margin-top: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .action-row-1 {
+                flex-direction: column;
+            }
+            
+            .action-row-1 .btn-action,
+            .action-row-1 .chatgpt-button-group {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .chatgpt-buttons-row {
+                width: 100%;
+            }
+            
+            .chatgpt-button-group .btn-chatgpt {
+                font-size: 13px; /* 在小螢幕上稍微縮小字體 */
             }
         }
 
@@ -396,18 +427,25 @@
             gap: 5px;
             position: relative;
             width: 100%;
+            min-width: 0; /* 允許內容縮小 */
         }
 
         .chatgpt-buttons-row {
             display: flex;
             align-items: center;
             gap: 0;
+            min-width: 0; /* 允許內容縮小 */
+            flex-shrink: 0; /* 防止縮小導致分離 */
         }
 
         .chatgpt-button-group .btn-chatgpt {
             border-radius: 8px 0 0 8px;
             margin-right: 0;
             flex: 1;
+            min-width: 0; /* 允許內容縮小 */
+            white-space: nowrap; /* 防止文字換行 */
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .btn-model-selector {
@@ -474,10 +512,27 @@
             display: flex;
             gap: 15px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
 
         .action-row-1 .btn-action {
             flex: 1;
+            min-width: 200px;
+        }
+        
+        .action-row-1 .chatgpt-button-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .action-row-clear {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .action-row-clear .btn-action {
+            min-width: 150px;
         }
 
         .section-header {
@@ -838,20 +893,22 @@
         <div class="action-buttons">
             <div class="action-row-1">
                 <button class="btn-action btn-copy" onclick="copyResult()">📋 複製結果</button>
-                <button class="btn-action btn-clear" onclick="clearAll()">🗑️ 清空全部</button>
+                <div class="chatgpt-button-group">
+                    <div class="chatgpt-buttons-row">
+                        <button class="btn-action btn-chatgpt" id="chatgptBtn" onclick="openInChatGPT()">📋 複製並開啟ChatGPT (o4-mini)</button>
+                        <button class="btn-model-selector" onclick="toggleModelSelector()">⚙️</button>
+                    </div>
+                    <div class="model-selector-dropdown" id="modelSelector">
+                        <div class="model-option" data-model="o4-mini">o4-mini</div>
+                        <div class="model-option" data-model="gpt-4o">4o</div>
+                        <div class="model-option" data-model="o3">o3</div>
+                        <div class="model-option" data-model="gpt-4-1">gpt 4.1</div>
+                        <div class="model-option" data-model="gpt-4-1-mini">gpt 4.1-mini</div>
+                    </div>
+                </div>
             </div>
-            <div class="chatgpt-button-group">
-                <div class="chatgpt-buttons-row">
-                    <button class="btn-action btn-chatgpt" id="chatgptBtn" onclick="openInChatGPT()">💬 在ChatGPT中開啟 (o4-mini)</button>
-                    <button class="btn-model-selector" onclick="toggleModelSelector()">⚙️</button>
-                </div>
-                <div class="model-selector-dropdown" id="modelSelector">
-                    <div class="model-option" data-model="o4-mini">o4-mini</div>
-                    <div class="model-option" data-model="gpt-4o">4o</div>
-                    <div class="model-option" data-model="o3">o3</div>
-                    <div class="model-option" data-model="gpt-4-1">gpt 4.1</div>
-                    <div class="model-option" data-model="gpt-4-1-mini">gpt 4.1-mini</div>
-                </div>
+            <div class="action-row-clear">
+                <button class="btn-action btn-clear" onclick="clearAll()">🗑️ 清空全部</button>
             </div>
         </div>
     </div>
@@ -1587,7 +1644,7 @@
             selectedModel = model;
             
             // 更新按鈕文字
-            document.getElementById('chatgptBtn').textContent = `💬 在ChatGPT中開啟 (${model})`;
+            document.getElementById('chatgptBtn').textContent = `📋 複製並開啟ChatGPT (${model})`;
             
             // 更新選中狀態
             document.querySelectorAll('.model-option').forEach(option => {
@@ -1627,13 +1684,49 @@
                 return;
             }
             
-            // URL encode the result
-            const encodedPrompt = encodeURIComponent(result);
-            const chatGPTUrl = `https://chatgpt.com/?model=${selectedModel}&q=${encodedPrompt}`;
-            
-            // Open in new tab
-            window.open(chatGPTUrl, '_blank');
-            showNotification(`💬 已在新分頁開啟 ChatGPT (${selectedModel})！`);
+            // 先複製提示詞到剪貼簿
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(result).then(() => {
+                    // 複製成功後開啟 ChatGPT
+                    const chatGPTUrl = `https://chatgpt.com/?model=${selectedModel}`;
+                    window.open(chatGPTUrl, '_blank');
+                    showNotification(`📋 已複製提示詞並開啟 ChatGPT (${selectedModel})！`);
+                }).catch((error) => {
+                    console.error('Clipboard API failed:', error);
+                    // 如果複製失敗，使用 fallback 方法
+                    fallbackCopyAndOpen(result);
+                });
+            } else {
+                // 如果不支援 clipboard API，使用 fallback 方法
+                fallbackCopyAndOpen(result);
+            }
+        }
+        
+        function fallbackCopyAndOpen(result) {
+            try {
+                const textArea = document.createElement('textarea');
+                textArea.value = result;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                if (successful) {
+                    const chatGPTUrl = `https://chatgpt.com/?model=${selectedModel}`;
+                    window.open(chatGPTUrl, '_blank');
+                    showNotification(`📋 已複製提示詞並開啟 ChatGPT (${selectedModel})！`);
+                } else {
+                    showNotification('❌ 複製失敗，請手動複製後再開啟 ChatGPT', '#f56565');
+                }
+            } catch (error) {
+                console.error('Fallback copy failed:', error);
+                showNotification('❌ 複製失敗，請手動複製後再開啟 ChatGPT', '#f56565');
+            }
         }
 
         function copyResult() {
@@ -1723,7 +1816,7 @@
     
     <!-- Version Footer -->
     <div style="text-align: center; margin-top: 20px; padding: 10px; color: #888; font-size: 12px; border-top: 1px solid #eee;">
-        版本 v0.3.4
+        版本 v0.3.5
     </div>
 </body>
 </html>
