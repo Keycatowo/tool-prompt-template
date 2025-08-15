@@ -895,7 +895,7 @@
                 <button class="btn-action btn-copy" onclick="copyResult()">📋 複製結果</button>
                 <div class="chatgpt-button-group">
                     <div class="chatgpt-buttons-row">
-                        <button class="btn-action btn-chatgpt" id="chatgptBtn" onclick="openInChatGPT()">📋 複製並開啟ChatGPT (o4-mini)</button>
+                        <button class="btn-action btn-chatgpt" id="chatgptBtn" onclick="openInChatGPT()">📋 複製並開啟ChatGPT (gpt-5)</button>
                         <button class="btn-model-selector" onclick="toggleModelSelector()">⚙️</button>
                     </div>
                     <div class="model-selector-dropdown" id="modelSelector">
@@ -904,6 +904,7 @@
                         <div class="model-option" data-model="o3">o3</div>
                         <div class="model-option" data-model="gpt-4-1">gpt 4.1</div>
                         <div class="model-option" data-model="gpt-4-1-mini">gpt 4.1-mini</div>
+                        <div class="model-option" data-model="gpt-5">gpt-5</div>
                     </div>
                 </div>
             </div>
@@ -1615,7 +1616,7 @@
         }
 
         // 全局變量存儲選中的模型
-        let selectedModel = 'o4-mini';
+        let selectedModel = 'gpt-5';
 
         function generateResult() {
             let result = currentTemplate;
@@ -1659,7 +1660,7 @@
         // 初始化模型選擇器
         function initModelSelector() {
             // 設定預設選中狀態
-            document.querySelector('[data-model="o4-mini"]').classList.add('selected');
+            document.querySelector('[data-model="gpt-5"]').classList.add('selected');
             
             // 為每個選項添加點擊事件
             document.querySelectorAll('.model-option').forEach(option => {
@@ -1816,7 +1817,7 @@
     
     <!-- Version Footer -->
     <div style="text-align: center; margin-top: 20px; padding: 10px; color: #888; font-size: 12px; border-top: 1px solid #eee;">
-        版本 v0.3.5
+        版本 v0.3.6
     </div>
 </body>
 </html>
