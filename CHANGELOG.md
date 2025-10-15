@@ -7,6 +7,7 @@
 ## 版本列表
 
 - [**未發佈**](changelogs/unreleased.md) - 計劃中的功能和改進
+- [**v0.4.0**](changelogs/v0.4.0.md) - 2024-10-15 - ChatGPT 整合優化
 - [**v0.1.0-alpha**](changelogs/v0.1.0-alpha.md) - 2025-07-15 - Alpha 版本發布
 
 ## 版本記錄說明
